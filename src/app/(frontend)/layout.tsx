@@ -1,20 +1,15 @@
 import React from 'react'
 import './styles.css'
 
-// Metadatos para SEO y título de la página
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  description: 'Fluxdev Blog Backend',
+  title: 'Fluxdev Blog API',
 }
 
-// Layout principal para la parte pública del sitio
-export default async function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body>
-        {/* Renderizado de las páginas hijas */}
         <main>{children}</main>
       </body>
     </html>

@@ -1,14 +1,42 @@
 import type { CollectionConfig } from 'payload'
 
-// Configuración de la colección de Usuarios del sistema
 export const Users: CollectionConfig = {
   slug: 'users',
+  auth: true,
   admin: {
-    useAsTitle: 'email', // Se muestra el email en las relaciones y listas
+    useAsTitle: 'name',
   },
-  auth: true, // Habilita autenticación automática (login, etc)
+  access: {
+    // Solo admins ven todos los usuarios, los demás solo ven su propio perfil
+    read: ({ req: { user } }) => {
+      if (user?.role === 'admin') return true
+      return { id: { equals: user?.id } }
+    },
+    update: ({ req: { user } }) => {
+      if (user?.role === 'admin') return true
+      return { id: { equals: user?.id } }
+    },
+    delete: ({ req: { user } }) => user?.role === 'admin',
+  },
   fields: [
-    // El campo Email ya viene por defecto al activar 'auth'
-    // Aquí puedes agregar campos como 'nombre', 'rol', etc.
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'role',
+      type: 'select',
+      options: [
+        { label: 'Admin', value: 'admin' },
+        { label: 'Author', value: 'author' },
+      ],
+      defaultValue: 'author',
+      required: true,
+      access: {
+        // Solo los admins pueden cambiar el rol de alguien
+        update: ({ req: { user } }) => user?.role === 'admin',
+      },
+    },
   ],
 }
