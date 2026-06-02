@@ -33,13 +33,13 @@ export const Posts: CollectionConfig = {
         // Genera el slug automáticamente desde el título si se deja vacío
         beforeValidate: [
           ({ data, originalDoc }) => {
-            if (!data.slug && data.title) {
+            if (data && !data.slug && data.title) {
               return data.title
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/(^-|-$)+/g, '')
             }
-            return data.slug || originalDoc?.slug
+            return data?.slug || originalDoc?.slug
           },
         ],
       },

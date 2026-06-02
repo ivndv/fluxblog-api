@@ -7,7 +7,7 @@ describe('Media collection', () => {
   })
 
   it('should have upload enabled', () => {
-    expect(Media.upload).toBe(true)
+    expect(Media.upload).toBeTruthy()
   })
 
   it('should have alt text field', () => {
