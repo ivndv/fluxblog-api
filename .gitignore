@@ -43,6 +43,8 @@ next-env.d.ts
 
 .env
 
+*.sql
+
 /media
 
 # Playwright

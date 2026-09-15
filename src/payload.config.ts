@@ -88,5 +88,17 @@ export default buildConfig({
         })
       },
     },
+    {
+      path: '/health',
+      method: 'get',
+      handler: async () => {
+        return Response.json({
+          status: 'ok',
+          service: 'fluxblog-api',
+          timestamp: new Date().toISOString(),
+          uptime: process.uptime(),
+        })
+      },
+    },
   ],
 })
