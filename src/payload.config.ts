@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { s3Storage } from '@payloadcms/storage-s3'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -13,6 +14,16 @@ import { Posts } from './collections/Posts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// R2 storage is enabled only when all credentials are present.
+// Local development keeps using Payload's default disk storage.
+const r2Enabled = Boolean(
+  process.env.R2_BUCKET &&
+    process.env.R2_ACCESS_KEY_ID &&
+    process.env.R2_SECRET_ACCESS_KEY &&
+    process.env.R2_ENDPOINT &&
+    process.env.R2_PUBLIC_URL,
+)
 
 // Configuración central de Payload CMS
 export default buildConfig({
@@ -52,6 +63,27 @@ export default buildConfig({
         title: 'Fluxdev Blog API',
         description: 'Documentación oficial de la API del CMS Fluxdev.',
         version: '1.0.0',
+      },
+    }),
+    s3Storage({
+      enabled: r2Enabled,
+      collections: {
+        media: {
+          prefix: 'fluxblog/media',
+          disablePayloadAccessControl: true,
+          generateFileURL: ({ filename }) =>
+            `${process.env.R2_PUBLIC_URL}/${filename}`,
+        },
+      },
+      bucket: process.env.R2_BUCKET || '',
+      config: {
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+        },
+        region: 'auto',
+        endpoint: process.env.R2_ENDPOINT,
+        forcePathStyle: true,
       },
     }),
   ],

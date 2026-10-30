@@ -1,9 +1,9 @@
 # Etapa base para Node (para el final)
-FROM node:24.14.1-alpine AS runner_base
+FROM node:24.22.1-alpine AS runner_base
 WORKDIR /app
 
 # Instalación de dependencias con Bun Oficial
-FROM oven/bun:1.3.13-alpine AS deps
+FROM oven/bun:1.4.4-alpine AS deps
 WORKDIR /app
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
