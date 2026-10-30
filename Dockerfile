@@ -40,7 +40,7 @@ USER nextjs
 EXPOSE 3050
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=25s \
-  CMD wget -qO- http://127.0.0.1:3050/api/health || exit 1
+  CMD wget -qO- http://$(hostname):3050/api/health || exit 1
 
 # Iniciar servidor
 CMD ["node", "server.js"]
