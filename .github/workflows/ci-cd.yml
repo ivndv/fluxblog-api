@@ -1,5 +1,6 @@
 # FluxBlog API CI/CD — lint -> test -> deploy (solo push a main)
 # Flujo: Cualquier push o PR a main/develop ejecuta lint y pruebas en paralelo; deploy solo se dispara en push a main con todo en verde.
+# El deploy llama al webhook de Dokploy por HTTPS con un Service Token de Cloudflare Access (no usa SSH).
 
 name: Blog Backend CI/CD
 
@@ -48,44 +49,21 @@ jobs:
     needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via Dokploy API
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            set -euo pipefail
-            DOKPLOY_TOKEN="${{ secrets.DOKPLOY_DEPLOY_TOKEN }}"
-            C=$(docker ps -q --filter name=dokploy | while read id; do
-              img=$(docker inspect -f '{{.Config.Image}}' "$id")
-              case "$img" in
-                *dokploy/dokploy*) echo "$id"; break ;;
-              esac
-            done)
-            if [ -z "$C" ]; then
-              echo "No se encontró el contenedor de Dokploy"
-              exit 1
-            fi
-            docker exec -e DOKPLOY_TOKEN="$DOKPLOY_TOKEN" "$C" node -e '
-              const token = process.env.DOKPLOY_TOKEN;
-              const payload = {
-                ref: "refs/heads/main",
-                commits: [{ added: [], modified: ["README.md"], removed: [] }],
-                head_commit: { message: "Deploy from CI" }
-              };
-              fetch(`http://localhost:3000/api/deploy/${token}`, {
-                method: "POST",
-                headers: { "x-github-event": "push", "content-type": "application/json" },
-                body: JSON.stringify(payload)
-              })
-                .then(async (res) => {
-                  console.log("Dokploy:", res.status, await res.text());
-                  process.exit(res.ok ? 0 : 1);
-                })
-                .catch((error) => {
-                  console.error(error);
-                  process.exit(1);
-                });
-            '
-            echo "Deploy solicitado a Dokploy."
+      # Sin SSH: el webhook se llama por HTTPS y Cloudflare Access lo autentica
+      # con un Service Token acotado a /api/deploy/*.
+      - name: Deploy via Dokploy webhook (Cloudflare Access)
+        env:
+          DOKPLOY_DEPLOY_TOKEN: ${{ secrets.DOKPLOY_DEPLOY_TOKEN }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent \
+            -X POST "https://dokploy.fluxdv.icu/api/deploy/${DOKPLOY_DEPLOY_TOKEN}" \
+            -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
+            -H "x-github-event: push" \
+            -H "content-type: application/json" \
+            -d '{"ref":"refs/heads/main","commits":[{"added":[],"modified":["README.md"],"removed":[]}],"head_commit":{"message":"Deploy from CI"}}'
+          echo
+          echo "Deploy solicitado a Dokploy."
