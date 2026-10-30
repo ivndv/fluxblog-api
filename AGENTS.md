@@ -164,7 +164,8 @@ Archivo `.env` en la raíz del proyecto:
 
 ```env
 # Clave secreta para firma de cookies y tokens JWT de Payload
-PAYLOAD_SECRET=da49a0fb4b4d0aa85b0a1fd9
+# NUNCA documentes el valor real aqui: este archivo es publico.
+PAYLOAD_SECRET=your_secret_key_here
 
 # URL de conexión a la base de datos PostgreSQL
 # Local: postgresql://postgres:postgres@localhost:5432/fluxdev-db
