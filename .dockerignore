@@ -1,0 +1,25 @@
+# Control de versiones y CI
+.git
+.gitignore
+.github
+
+# Dependencias y artefactos de build
+node_modules
+.next
+dist
+coverage
+
+# Contenido local y pruebas
+media
+tests
+*.log
+npm-debug.log*
+
+# Volcados de base de datos (nunca deben entrar al contexto de build)
+*.sql
+*.dump
+*.sql.gz
+
+# Nota: .env NO se excluye aqui. Dokploy lo escribe en el contexto de build y
+# Next.js lo necesita para compilar. El Dockerfile lo elimina antes del COPY
+# final para que no llegue a la imagen.
