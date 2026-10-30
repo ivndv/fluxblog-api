@@ -35,17 +35,17 @@ Guía operativa y técnica para agentes de Inteligencia Artificial que colaboren
 
 | Capa | Tecnología | Versión / Detalle |
 | :--- | :--- | :--- |
-| **Runtime & Gestor** | **Bun** | `v1.3.x` (`bun.lock`) |
-| **Framework Headless CMS** | **Payload CMS 3** | `payload ^3.89.0`, `@payloadcms/next ^3.89.0`, `@payloadcms/ui ^3.89.0` |
+| **Runtime & Gestor** | **Bun / Node** | `Bun v1.4.x` (`bun.lock`), `Node >=24.22.1` |
+| **Framework Headless CMS** | **Payload CMS 3** | `payload 3.92.1`, `@payloadcms/next 3.92.1`, `@payloadcms/ui 3.92.1` |
 | **Meta-Framework Web** | **Next.js 15** | `next 15.4.11` (App Router, Server Components y Server Actions) |
-| **Librería de UI** | **React 19** | `react ^19.3.0`, `react-dom ^19.3.0` |
-| **Base de Datos & Adaptador** | **PostgreSQL 18** | `@payloadcms/db-postgres ^3.89.0` (`postgresAdapter` con pool de conexiones) |
-| **Editor de Contenido** | **Lexical RichText** | `@payloadcms/richtext-lexical ^3.89.0` (árbol AST estructurado) |
-| **Documentación de API** | **OpenAPI 3.0 + Swagger** | `payload-oapi ^0.2.5` con endpoint `/docs` y `/api/openapi.json` |
-| **Procesamiento de Imágenes** | **Sharp** | `sharp ^0.34.5` (redimensionamiento automático thumbnail/medium) |
-| **Lenguaje** | **TypeScript** | `typescript 5.7.3` (Modo estricto, tipos sincronizados en `payload-types.ts`) |
-| **Testing Automatizado** | **Vitest** | `vitest ^4.0.18` con `@testing-library/react` y `jsdom` |
-| **Linter & Formatter** | **ESLint 9 + Prettier** | `eslint 9.39.4`, `eslint-config-next 15.4.11`, `prettier 3.8.3` |
+| **Librería de UI** | **React 19** | `react 19.3.1`, `react-dom 19.3.1` |
+| **Base de Datos & Adaptador** | **PostgreSQL 18** | `@payloadcms/db-postgres 3.92.1` (`postgresAdapter` con pool de conexiones) |
+| **Editor de Contenido** | **Lexical RichText** | `@payloadcms/richtext-lexical 3.92.1` (árbol AST estructurado) |
+| **Documentación de API** | **OpenAPI 3.0 + Swagger** | `payload-oapi ^0.3.1` con endpoint `/docs` y `/api/openapi.json` |
+| **Procesamiento de Imágenes** | **Sharp** | `sharp ^0.35.5` (redimensionamiento automático thumbnail/medium) |
+| **Lenguaje** | **TypeScript** | `typescript 5.9.3` (Modo estricto, tipos sincronizados en `payload-types.ts`) |
+| **Testing Automatizado** | **Vitest** | `vitest ^5.0.5` (+ `vite ^8.3.5`) con `@testing-library/react` y `jsdom` |
+| **Linter & Formatter** | **ESLint 9 + Prettier** | `eslint ^9.39.5`, `eslint-config-next 15.4.11`, `prettier ^3.9.10` |
 | **Contenedores & Despliegue** | **Docker & Dokploy** | `Dockerfile`, `docker-compose.yml`, orquestado en VPS Linux |
 
 ---
@@ -97,8 +97,10 @@ fluxblog-api/
   - Creación/Eliminación y cambio de rol: Exclusivo para administradores.
 
 ### 📝 2. Posts (`src/collections/Posts.ts`)
-- **Localización (i18n):** Campos `title`, `slug` y `content` localizados de forma nativa en español (`es`) e inglés (`en`).
+- **Localización (i18n):** Campos `title`, `slug`, `content` y `excerpt` localizados de forma nativa en español (`es`) e inglés (`en`).
 - **Control de Versiones y Borradores:** `versions: { drafts: true }` con campo de estado automático `_status` (`draft` / `published`).
+- **Acceso público:** Solo se exponen documentos `published`; los usuarios autenticados ven todo. El frontend además filtra `where[_status][equals]=published`.
+- **Campos de presentación:** `excerpt` (resumen para cards/SEO/RSS) y `featured` (destacar en portada).
 - **Generación Automática de Slugs:** Hook `beforeValidate` que transforma automáticamente el título a formato kebab-case URL-friendly si el campo slug viene vacío.
 - **Relaciones:** Vinculación obligatoria con `author` (`Users`) y opcional con `featuredImage` (`Media`).
 - **Contenido Enriquecido:** Editor Lexical moderno estructurado en bloques y nodos serializables.
@@ -182,6 +184,6 @@ PORT=3050
 
 1. **NO hacer commit ni push a Git sin autorización explícita:** Nunca ejecutes comandos de `git commit` o `git push` a menos que el usuario lo solicite de forma directa.
 2. **NO actualizar Next.js a la versión 16 a ciegas:** Payload CMS 3.x depende estrictamente del ecosistema de Next.js 15 (`^15.x`). Subir a Next 16 provocará fallos de compilación con `@next/env` y el App Router.
-3. **NO desincronizar versiones de Payload:** Todos los paquetes que inicien con `@payloadcms/*` y el paquete `payload` deben mantener **la misma versión exacta** (actualmente `3.89.0`).
+3. **NO desincronizar versiones de Payload:** Todos los paquetes que inicien con `@payloadcms/*` y el paquete `payload` deben mantener **la misma versión exacta** (actualmente `3.92.1`).
 4. **NO modificar colecciones sin regenerar tipos:** Si agregas o modificas un campo en `src/collections/`, ejecuta de inmediato `bun run generate:types` para mantener `src/payload-types.ts` al día.
 5. **NO romper la suite de tests:** Siempre ejecuta `bun run test` y `bun run lint` tras realizar cambios para garantizar que los 9 tests existentes sigan en verde.
