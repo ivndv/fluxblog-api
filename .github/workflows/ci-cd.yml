@@ -55,9 +55,12 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "Iniciando despliegue de blog-backend en Dokploy vía API..."
-            curl -X POST 'http://localhost:3000/api/application.deploy' \
+            set -e
+            DOKPLOY_URL="${{ secrets.DOKPLOY_URL || 'http://localhost:3001' }}"
+            echo "Solicitando deploy a Dokploy en ${DOKPLOY_URL}..."
+            curl --fail --show-error --silent \
+              -X POST "${DOKPLOY_URL}/api/application.deploy" \
               -H 'Content-Type: application/json' \
               -H 'x-api-key: ${{ secrets.DOKPLOY_API_TOKEN }}' \
               -d '{"applicationId": "${{ secrets.DOKPLOY_APP_ID }}"}'
-            echo "¡Despliegue completado exitosamente!"
+            echo "Deploy solicitado. Dokploy lo ejecutará en segundo plano."
