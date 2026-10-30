@@ -1,9 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { slugify } from '../utils/slugify'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
   access: {
-    read: () => true,
+    // Public API only exposes published documents; authenticated users (admin) see everything.
+    read: ({ req: { user } }) => (user ? true : { _status: { equals: 'published' } }),
   },
   admin: {
     useAsTitle: 'title',
@@ -33,13 +35,11 @@ export const Posts: CollectionConfig = {
         // Genera el slug automáticamente desde el título si se deja vacío
         beforeValidate: [
           ({ data, originalDoc }) => {
-            if (data && !data.slug && data.title) {
-              return data.title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)+/g, '')
-            }
-            return data?.slug || originalDoc?.slug
+            // Never regenerate an existing slug on partial updates (e.g. toggling `featured`).
+            if (data?.slug) return data.slug
+            if (originalDoc?.slug) return originalDoc.slug
+            if (data?.title) return slugify(data.title)
+            return undefined
           },
         ],
       },
@@ -62,9 +62,26 @@ export const Posts: CollectionConfig = {
       },
     },
     {
+      name: 'excerpt',
+      type: 'textarea',
+      localized: true,
+      admin: {
+        description: 'Short summary used in cards, SEO descriptions and the RSS feed.',
+      },
+    },
+    {
       name: 'content',
       type: 'richText',
       localized: true,
+    },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Highlight this post on the home page.',
+      },
     },
     {
       name: 'tags',

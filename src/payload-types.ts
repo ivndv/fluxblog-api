@@ -134,6 +134,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -153,6 +154,8 @@ export interface User {
 export interface Media {
   id: number;
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -193,6 +196,10 @@ export interface Post {
   slug: string;
   author: number | User;
   featuredImage?: (number | null) | Media;
+  /**
+   * Short summary used in cards, SEO descriptions and the RSS feed.
+   */
+  excerpt?: string | null;
   content?: {
     root: {
       type: string;
@@ -208,6 +215,10 @@ export interface Post {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Highlight this post on the home page.
+   */
+  featured?: boolean | null;
   tags?:
     | {
         value: string;
@@ -311,6 +322,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -327,6 +339,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -372,7 +386,9 @@ export interface PostsSelect<T extends boolean = true> {
   slug?: T;
   author?: T;
   featuredImage?: T;
+  excerpt?: T;
   content?: T;
+  featured?: T;
   tags?:
     | T
     | {

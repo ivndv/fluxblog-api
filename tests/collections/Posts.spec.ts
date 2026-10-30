@@ -13,7 +13,16 @@ describe('Posts collection', () => {
     expect(slugField).toBeDefined()
   })
 
-  it('should have public read access', () => {
-    expect(Posts.access?.read?.()).toBe(true)
+  it('should expose only published posts to anonymous users', () => {
+    const read = Posts.access?.read as (args: { req: { user: unknown } }) => unknown
+    expect(read({ req: { user: null } })).toEqual({ _status: { equals: 'published' } })
+    expect(read({ req: { user: { id: 1 } } })).toBe(true)
+  })
+
+  it('should have excerpt and featured fields', () => {
+    const excerptField = Posts.fields.find(f => 'name' in f && f.name === 'excerpt')
+    const featuredField = Posts.fields.find(f => 'name' in f && f.name === 'featured')
+    expect(excerptField).toBeDefined()
+    expect(featuredField).toBeDefined()
   })
 })
