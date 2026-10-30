@@ -59,8 +59,5 @@ jobs:
             DOKPLOY_URL="${{ secrets.DOKPLOY_URL || 'http://localhost:3001' }}"
             echo "Solicitando deploy a Dokploy en ${DOKPLOY_URL}..."
             curl --fail --show-error --silent \
-              -X POST "${DOKPLOY_URL}/api/application.deploy" \
-              -H 'Content-Type: application/json' \
-              -H 'x-api-key: ${{ secrets.DOKPLOY_API_TOKEN }}' \
-              -d '{"applicationId": "${{ secrets.DOKPLOY_APP_ID }}"}'
+              "${DOKPLOY_URL}/api/deploy/${{ secrets.DOKPLOY_DEPLOY_TOKEN }}"
             echo "Deploy solicitado. Dokploy lo ejecutará en segundo plano."
