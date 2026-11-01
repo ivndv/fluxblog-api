@@ -15,7 +15,7 @@ Este proyecto es el panel de administración central del Blog FluxDev. Funciona 
 
 1. **Artículos (Posts)**: La vista principal donde se redactan, editan y publican las entradas del blog.
 2. **Archivos (Media)**: Sección dedicada para almacenar y organizar todas las fotografías e ilustraciones.
-3. **Usuarios (Users)**: Apartado para gestionar el acceso de los administradores al panel de control.
+3. **Usuarios (Users)**: Apartado para gestionar el acceso al panel, con roles de administrador y autor.
 
 ## Uso
 
@@ -29,29 +29,8 @@ Este proyecto es el panel de administración central del Blog FluxDev. Funciona 
 - Next.js 15
 - PostgreSQL (Base de datos)
 - Node.js
-- pnpm
+- Bun
 
-## Instalación
-
-1. **Clonar el Repositorio**: Descarga este proyecto en tu computadora usando Git.
-
-```bash
-git clone https://github.com/Ivandv19/blog-personal-fluxdev-backend.git
-```
-
-2. **Instalar Dependencias**: Entra a la carpeta del proyecto a través de la terminal y ejecuta:
-
-```bash
-pnpm install
-```
-
-3. **Variables de Entorno**: Crea un archivo `.env` en la raíz (puedes apoyarte en `.env.example`). Necesitarás especificar `DATABASE_URL` vinculándolo a tu base de datos local y generar una contraseña en `PAYLOAD_SECRET`.
-
-4. **Iniciar el Proyecto**: Ejecuta el servidor localmente con el siguiente comando:
-
-```bash
-pnpm run dev
-```
 
 ## Créditos
 
@@ -63,12 +42,9 @@ Este es el proyecto interno que maneja los datos y artículos mostrados en el po
 
 Este proyecto está preparado para funcionar mediante contenedores Docker y se despliega y administra a través de plataformas como **Dokploy**.
 
-> *Nota: Próximamente se agregará un enlace a **Swagger** donde se podrá consultar la documentación de la API.*
+- **Fluxdev API (Swagger):** https://fluxblog-api.fluxdv.icu/api/docs
+- **Fluxdev Admin:** https://fluxblog-api.fluxdv.icu/admin
 
 ## Licencia
 
-Licencia de Uso Personal:
-
-Este software es propiedad de **Ivan Cruz**. Se permite el uso de este software solo para fines personales y no comerciales. No se permite la distribución, modificación ni uso comercial de este software sin el consentimiento expreso de **Ivan Cruz**.
-
-Cualquier uso no autorizado puede resultar en acciones legales.
+[MIT](LICENSE) © 2026 Ivan Cruz

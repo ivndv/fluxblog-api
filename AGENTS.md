@@ -13,7 +13,7 @@ Guía operativa y técnica para agentes de Inteligencia Artificial que colaboren
 * **Documentación Interactiva (SwaggerUI):** `https://fluxblog-api.fluxdv.icu/docs`
 * **Especificación OpenAPI 3.0:** `https://fluxblog-api.fluxdv.icu/api/openapi.json`
 * **Panel de Administración:** `https://fluxblog-api.fluxdv.icu/admin`
-* **Repositorio:** [https://github.com/Ivandv19/blog-personal-fluxdev-backend.git](https://github.com/Ivandv19/blog-personal-fluxdev-backend.git)
+* **Repositorio:** [https://github.com/ivndv/fluxblog-api](https://github.com/ivndv/fluxblog-api)
 
 ---
 
