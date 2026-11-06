@@ -1,56 +1,44 @@
-# AGENTS.md — Guía para Agentes en FluxBlog API
+# AGENTS.md — FluxBlog API
 
-Guía operativa y técnica para agentes de Inteligencia Artificial que colaboren en el desarrollo, mantenimiento, testing y optimización del backend headless CMS **FluxBlog API**.
+Guía operativa y técnica para agentes de IA que colaboren en el desarrollo, mantenimiento, testing y optimización del backend headless CMS **FluxBlog API**.
 
----
-
-## 1. Visión General del Proyecto
+## 1. Visión general
 
 **FluxBlog API** es el motor central de gestión de contenido (Headless CMS) y panel de administración del ecosistema de blogs técnicos de FluxDev. Está construido sobre **Payload CMS 3.0** integrado con **Next.js 15 (App Router)** y respaldado por una base de datos relacional **PostgreSQL**.
 
-* **Propósito:** Proveer una API REST/GraphQL y un panel de control intuitivo para la redacción, edición, versionado, localización multilingüe (Español / Inglés) y publicación de artículos técnicos, gestión centralizada de medios multimedia y control de acceso basado en roles (RBAC).
-* **Dominio en Producción:** [https://fluxblog-api.fluxdv.icu/](https://fluxblog-api.fluxdv.icu/)
-* **Documentación Interactiva (SwaggerUI):** `https://fluxblog-api.fluxdv.icu/docs`
-* **Especificación OpenAPI 3.0:** `https://fluxblog-api.fluxdv.icu/api/openapi.json`
-* **Panel de Administración:** `https://fluxblog-api.fluxdv.icu/admin`
-* **Repositorio:** [https://github.com/ivndv/fluxblog-api](https://github.com/ivndv/fluxblog-api)
+- **Propósito:** proveer una API REST/GraphQL y un panel de control para la redacción, edición, versionado, localización multilingüe (español / inglés) y publicación de artículos técnicos, la gestión centralizada de medios multimedia y el control de acceso basado en roles (RBAC).
+- **Dominio en producción:** [https://fluxblog-api.fluxdv.icu/](https://fluxblog-api.fluxdv.icu/)
+- **Documentación interactiva (SwaggerUI):** `https://fluxblog-api.fluxdv.icu/docs`
+- **Especificación OpenAPI 3.0:** `https://fluxblog-api.fluxdv.icu/api/openapi.json`
+- **Panel de administración:** `https://fluxblog-api.fluxdv.icu/admin`
+- **Repositorio:** [https://github.com/ivndv/fluxblog-api](https://github.com/ivndv/fluxblog-api)
 
----
+## 2. Antes de tocar código
 
-## 2. Antes de Tocar Código (Contexto con CodeGraph)
+**CodeGraph** (índice de símbolos del repo): usa `codegraph_explore` (`query`, `maxFiles`, `projectPath`) antes de un grep masivo o de leer varios archivos; devuelve fuente verbatim, rutas de llamada e impacto.
 
-* **Uso del MCP CodeGraph:** Antes de realizar búsquedas masivas de texto o explorar múltiples archivos a ciegas, invoca la herramienta `codegraph_explore` para inspeccionar el flujo de llamadas, blast radius y el código fuente verbatim de los símbolos en una sola llamada eficiente.
-* **Estado y Sincronización:**
-  ```bash
-  # Verificar el estado del índice de CodeGraph
-  codegraph status /home/ivan/software-dev/fluxblog-api
+- `codegraph sync /home/ivan/software-dev/fluxblog-api` tras editar, pull o cambiar de rama (incremental, uso normal).
+- `codegraph index /home/ivan/software-dev/fluxblog-api` solo al crear el índice, tras `codegraph upgrade` o si `status` avisa `built by vX` (rebuild completo).
+- `codegraph status /home/ivan/software-dev/fluxblog-api` para comprobar el estado.
 
-  # Sincronizar cambios en el árbol de archivos tras crear o renombrar módulos
-  codegraph sync /home/ivan/software-dev/fluxblog-api
-  ```
-
----
-
-## 3. Stack Tecnológico
+## 3. Stack tecnológico
 
 | Capa | Tecnología | Versión / Detalle |
 | :--- | :--- | :--- |
-| **Runtime & Gestor** | **Bun / Node** | `Bun v1.4.x` (`bun.lock`), `Node >=24.22.1` |
-| **Framework Headless CMS** | **Payload CMS 3** | `payload 3.92.1`, `@payloadcms/next 3.92.1`, `@payloadcms/ui 3.92.1` |
-| **Meta-Framework Web** | **Next.js 15** | `next 15.4.11` (App Router, Server Components y Server Actions) |
+| **Runtime y gestor** | **Bun / Node** | `Bun v1.4.x` (`bun.lock`), `Node >=24.22.1` |
+| **Framework headless CMS** | **Payload CMS 3** | `payload 3.92.1`, `@payloadcms/next 3.92.1`, `@payloadcms/ui 3.92.1` |
+| **Meta-framework web** | **Next.js 15** | `next 15.4.11` (App Router, Server Components y Server Actions) |
 | **Librería de UI** | **React 19** | `react 19.3.1`, `react-dom 19.3.1` |
-| **Base de Datos & Adaptador** | **PostgreSQL 18** | `@payloadcms/db-postgres 3.92.1` (`postgresAdapter` con pool de conexiones) |
-| **Editor de Contenido** | **Lexical RichText** | `@payloadcms/richtext-lexical 3.92.1` (árbol AST estructurado) |
-| **Documentación de API** | **OpenAPI 3.0 + Swagger** | `payload-oapi ^0.3.1` con endpoint `/docs` y `/api/openapi.json` |
-| **Procesamiento de Imágenes** | **Sharp** | `sharp ^0.35.5` (redimensionamiento automático thumbnail/medium) |
-| **Lenguaje** | **TypeScript** | `typescript 5.9.3` (Modo estricto, tipos sincronizados en `payload-types.ts`) |
-| **Testing Automatizado** | **Vitest** | `vitest ^5.0.5` (+ `vite ^8.3.5`) con `@testing-library/react` y `jsdom` |
-| **Linter & Formatter** | **ESLint 9 + Prettier** | `eslint ^9.39.5`, `eslint-config-next 15.4.11`, `prettier ^3.9.10` |
-| **Contenedores & Despliegue** | **Docker & Dokploy** | `Dockerfile`, `docker-compose.yml`, orquestado en VPS Linux |
+| **Base de datos y adaptador** | **PostgreSQL 18** | `@payloadcms/db-postgres 3.92.1` (`postgresAdapter` con pool de conexiones) |
+| **Editor de contenido** | **Lexical RichText** | `@payloadcms/richtext-lexical 3.92.1` (árbol AST estructurado) |
+| **Documentación de API** | **OpenAPI 3.0 + Swagger** | `payload-oapi ^0.3.1` con endpoints `/docs` y `/api/openapi.json` |
+| **Procesamiento de imágenes** | **Sharp** | `sharp ^0.35.5` (redimensionamiento automático thumbnail/medium) |
+| **Lenguaje** | **TypeScript** | `typescript 5.9.3` (modo estricto, tipos sincronizados en `payload-types.ts`) |
+| **Testing automatizado** | **Vitest** | `vitest ^5.0.5` (+ `vite ^8.3.5`) con `@testing-library/react` y `jsdom` |
+| **Linter y formatter** | **ESLint 9 + Prettier** | `eslint ^9.39.5`, `eslint-config-next 15.4.11`, `prettier ^3.9.10` |
+| **Contenedores y despliegue** | **Docker y Dokploy** | `Dockerfile`, `docker-compose.yml`, orquestado en VPS Linux |
 
----
-
-## 4. Estructura del Código
+## 4. Estructura del código
 
 ```
 fluxblog-api/
@@ -85,39 +73,48 @@ fluxblog-api/
 └── vitest.config.mts              → Configuración de pruebas unitarias con Vitest
 ```
 
----
+## 5. Arquitectura y flujo de datos
 
-## 5. Arquitectura de Colecciones y Modelo de Datos
+El modelo de datos se define en tres colecciones de Payload que alimentan el frontend desacoplado.
 
-### 👥 1. Users (`src/collections/Users.ts`)
-- **Autenticación:** Habilitada de forma nativa (`auth: true`) con sesiones seguras y hashing.
+### 5.1 Users (`src/collections/Users.ts`)
+
+- **Autenticación:** habilitada de forma nativa (`auth: true`) con sesiones seguras y hashing.
 - **Roles:** `admin` (acceso total a usuarios y contenidos) y `author` (redactor).
-- **Control de Acceso (RBAC):**
-  - Lectura/Actualización: Los administradores ven y editan todos los usuarios; los autores solo su propio registro.
-  - Creación/Eliminación y cambio de rol: Exclusivo para administradores.
+- **Control de acceso (RBAC):**
+  - Lectura/actualización: los administradores ven y editan todos los usuarios; los autores solo su propio registro.
+  - Creación/eliminación y cambio de rol: exclusivo para administradores.
 
-### 📝 2. Posts (`src/collections/Posts.ts`)
-- **Localización (i18n):** Campos `title`, `slug`, `content` y `excerpt` localizados de forma nativa en español (`es`) e inglés (`en`).
-- **Control de Versiones y Borradores:** `versions: { drafts: true }` con campo de estado automático `_status` (`draft` / `published`).
-- **Acceso público:** Solo se exponen documentos `published`; los usuarios autenticados ven todo. El frontend además filtra `where[_status][equals]=published`.
+### 5.2 Posts (`src/collections/Posts.ts`)
+
+- **Localización (i18n):** campos `title`, `slug`, `content` y `excerpt` localizados de forma nativa en español (`es`) e inglés (`en`).
+- **Control de versiones y borradores:** `versions: { drafts: true }` con campo de estado automático `_status` (`draft` / `published`).
+- **Acceso público:** solo se exponen documentos `published`; los usuarios autenticados ven todo. El frontend además filtra `where[_status][equals]=published`.
 - **Campos de presentación:** `excerpt` (resumen para cards/SEO/RSS) y `featured` (destacar en portada).
-- **Generación Automática de Slugs:** Hook `beforeValidate` que transforma automáticamente el título a formato kebab-case URL-friendly si el campo slug viene vacío.
-- **Relaciones:** Vinculación obligatoria con `author` (`Users`) y opcional con `featuredImage` (`Media`).
-- **Contenido Enriquecido:** Editor Lexical moderno estructurado en bloques y nodos serializables.
-- **Acceso:** Lectura pública (`read: () => true`) para consumo desde el frontend cliente.
+- **Generación automática de slugs:** hook `beforeValidate` que transforma el título a kebab-case URL-friendly si el campo slug viene vacío.
+- **Relaciones:** vinculación obligatoria con `author` (`Users`) y opcional con `featuredImage` (`Media`).
+- **Contenido enriquecido:** editor Lexical moderno estructurado en bloques y nodos serializables.
+- **Acceso:** lectura pública (`read: () => true`) para consumo desde el frontend cliente.
 
-### 🖼️ 3. Media (`src/collections/Media.ts`)
-- **MimeTypes Permitidos:** `image/png`, `image/jpeg`, `image/webp`, `application/pdf`.
-- **Redimensionamiento Automático (Sharp):**
-  - `thumbnail`: 400x300 px.
-  - `medium`: 800x600 px.
-- **Accesibilidad y SEO:** Campo `alt` obligatorio y localizado (`localized: true`).
+### 5.3 Media (`src/collections/Media.ts`)
 
----
+- **MimeTypes permitidos:** `image/png`, `image/jpeg`, `image/webp`, `application/pdf`.
+- **Redimensionamiento automático (Sharp):** `thumbnail` 400x300 px y `medium` 800x600 px.
+- **Accesibilidad y SEO:** campo `alt` obligatorio y localizado (`localized: true`).
 
-## 6. Comandos Útiles (Bun)
+## 6. Variables de entorno
 
-### 🚀 Desarrollo y Ejecución
+El archivo `.env` vive en la raíz del proyecto. Nunca documentar valores reales de secretos: este archivo es público.
+
+| Variable | Descripción |
+| :--- | :--- |
+| `PAYLOAD_SECRET` | Clave secreta para la firma de cookies y tokens JWT de Payload. |
+| `DATABASE_URL` | Cadena de conexión a PostgreSQL, tanto en local como en VPS/producción (base `fluxdev-db`). |
+| `SERVER_URL` | URL base del servidor, usada para links absolutos y CORS. |
+| `PORT` | Puerto de escucha local. |
+
+## 7. Comandos
+
 ```bash
 # Iniciar servidor de desarrollo en puerto configurado (ej: 3050)
 bun run dev
@@ -130,10 +127,7 @@ bun run build
 
 # Iniciar servidor compilado en producción
 bun run start
-```
 
-### ⚙️ Payload CMS CLI y Tipos
-```bash
 # Generar mapa de importaciones dinámicas para componentes del panel admin
 bun run generate:importmap
 
@@ -142,10 +136,7 @@ bun run generate:types
 
 # Ejecutar comandos directos de Payload CLI
 bun run payload
-```
 
-### 🧪 Testing y Calidad de Código
-```bash
 # Ejecutar todas las pruebas unitarias y de integración con Vitest
 bun run test
 
@@ -156,35 +147,17 @@ bun x vitest
 bun run lint
 ```
 
----
+## 8. Convenciones y reglas críticas
 
-## 7. Variables de Entorno
+1. **Commit y push:** prohibido ejecutar `git commit` o `git push` sin autorización explícita del usuario.
+2. **No actualizar Next.js a la versión 16 a ciegas:** Payload CMS 3.x depende estrictamente del ecosistema de Next.js 15 (`^15.x`). Subir a Next 16 provoca fallos de compilación con `@next/env` y el App Router.
+3. **No desincronizar versiones de Payload:** todos los paquetes `@payloadcms/*` y el paquete `payload` deben mantener la misma versión exacta (actualmente `3.92.1`).
+4. **No modificar colecciones sin regenerar tipos:** tras agregar o modificar un campo en `src/collections/`, ejecutar de inmediato `bun run generate:types` para mantener `src/payload-types.ts` al día.
+5. **No romper la suite de tests:** ejecutar siempre `bun run test` y `bun run lint` tras realizar cambios para garantizar que los 9 tests existentes sigan en verde.
 
-Archivo `.env` en la raíz del proyecto:
+## 9. Flujo de Git y despliegue
 
-```env
-# Clave secreta para firma de cookies y tokens JWT de Payload
-# NUNCA documentes el valor real aqui: este archivo es publico.
-PAYLOAD_SECRET=your_secret_key_here
-
-# URL de conexión a la base de datos PostgreSQL
-# Local: postgresql://postgres:postgres@localhost:5432/fluxdev-db
-# VPS / Producción: postgresql://<user>:<pass>@<host>:5432/fluxdev-db
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fluxdev-db
-
-# URL base del servidor (utilizada para links absolutos y CORS)
-SERVER_URL=http://localhost:3050
-
-# Puerto de escucha local
-PORT=3050
-```
-
----
-
-## 8. Qué NO Hacer (Reglas Estrictas para Agentes)
-
-1. **NO hacer commit ni push a Git sin autorización explícita:** Nunca ejecutes comandos de `git commit` o `git push` a menos que el usuario lo solicite de forma directa.
-2. **NO actualizar Next.js a la versión 16 a ciegas:** Payload CMS 3.x depende estrictamente del ecosistema de Next.js 15 (`^15.x`). Subir a Next 16 provocará fallos de compilación con `@next/env` y el App Router.
-3. **NO desincronizar versiones de Payload:** Todos los paquetes que inicien con `@payloadcms/*` y el paquete `payload` deben mantener **la misma versión exacta** (actualmente `3.92.1`).
-4. **NO modificar colecciones sin regenerar tipos:** Si agregas o modificas un campo en `src/collections/`, ejecuta de inmediato `bun run generate:types` para mantener `src/payload-types.ts` al día.
-5. **NO romper la suite de tests:** Siempre ejecuta `bun run test` y `bun run lint` tras realizar cambios para garantizar que los 9 tests existentes sigan en verde.
+- **Prohibido:** hacer `git commit` o `git push` sin la aprobación explícita del usuario.
+- **Ramas:** todo el desarrollo se realiza en `develop`; el merge a `main` solo se hace con aprobación explícita.
+- **Mensajes:** Conventional Commits en minúsculas y en español (`feat: ...`, `fix: ...`, `chore: ...`, `docs: ...`).
+- **Despliegue:** imagen definida en `Dockerfile` y orquestada con `docker-compose.yml` mediante Dokploy sobre un VPS Linux; los workflows de `.github/` cubren integración y pruebas continuas.
