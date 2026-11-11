@@ -42,8 +42,8 @@ Este es el proyecto interno que maneja los datos y artículos mostrados en el po
 
 Este proyecto está preparado para funcionar mediante contenedores Docker y se despliega y administra a través de plataformas como **Dokploy**.
 
-- **Fluxdev API (Swagger):** https://fluxblog-api.fluxdv.icu/api/docs
-- **Fluxdev Admin:** https://fluxblog-api.fluxdv.icu/admin
+- **Fluxdev API (Swagger):** https://fluxblog-api.liuma.app/api/docs
+- **Fluxdev Admin:** https://fluxblog-api.liuma.app/admin
 
 ## Licencia
 
